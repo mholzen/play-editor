@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Slider, Stack } from '@mui/material';
+import { Box, Slider, Typography } from '@mui/material';
 
 interface SliderData {
   name: string;
@@ -14,7 +14,7 @@ const SlidersComponent = () => {
   // Function to fetch sliders data from the API
   const fetchSlidersData = async () => {
     try {
-      const response = await fetch('/controls/');
+      const response = await fetch('/api/controls/');
       const data = await response.json();
 
       let sliders: SliderData[] = data.map((item: any, i: number): SliderData => {
@@ -45,12 +45,8 @@ const SlidersComponent = () => {
     // const name = event.currentTarget.getAttribute('data-name')
 
     try {
-      const response = await fetch(`/controls/${name}/${value}`, {
+      const response = await fetch(`/api/v2/root/0/${name}/${value}`, {
         method: 'POST',
-        // headers: {
-        //   'Content-Type': 'application/json',
-        // },
-        // body: JSON.stringify(value),
       });
 
       if (!response.ok) {
@@ -70,8 +66,10 @@ const SlidersComponent = () => {
         <tr>
           {slidersData.map((slider, index) => (
             <th>
-              <Box sx={{ width: 100 }}>
-                {slider.name}
+              <Box sx={{ width: 50 }}>
+                <Typography>
+                  {slider.name}
+                </Typography>
               </Box>
             </th>
           ))}
@@ -79,7 +77,7 @@ const SlidersComponent = () => {
         <tr>
           {slidersData.map((slider, index) => (
             <td>
-              <Box sx={{ height: 300 }}>
+              <Box sx={{ height: 200 }}>
                 <Slider
                   orientation="vertical"
                   defaultValue={slider.defaultValue}
