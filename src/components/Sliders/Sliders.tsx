@@ -8,26 +8,48 @@ interface SliderData {
   min: number;
   max: number;
 }
-const SlidersComponent = () => {
+
+const DEFAULT_SLIDER_CONFIG = {
+  step: 1,
+  min: 0,
+  max: 255
+};
+
+const parseItem = (item: any, name: string): SliderData => {
+  if (typeof item === 'number') {
+    return {
+      name: name,
+      defaultValue: item,
+      ...DEFAULT_SLIDER_CONFIG
+    };
+  }
+  return {
+    name: name,
+    defaultValue: item.Value,
+    min: item.Min ? item.Min : DEFAULT_SLIDER_CONFIG.min,
+    max: item.Max ? item.Max : DEFAULT_SLIDER_CONFIG.max,
+    step: item.Step ? item.Step : DEFAULT_SLIDER_CONFIG.step,
+  };
+};
+
+const parseResponse = (data: any): SliderData[] => {
+  if (!Array.isArray(data)) {
+    return Object.keys(data)
+      .sort()
+      .map((key, index) => parseItem(data[key], key));
+  }
+
+  return data.map((item: any, index: number): SliderData => parseItem(item, data[index].Channel));
+};
+
+const SlidersComponent = ({ controlId }: { controlId: number }) => {
   const [slidersData, setSlidersData] = useState<SliderData[]>([]);
 
-  // Function to fetch sliders data from the API
   const fetchSlidersData = async () => {
     try {
-      const response = await fetch('/api/controls/');
+      const response = await fetch(`/api/v2/root/${controlId}`);
       const data = await response.json();
-
-      let sliders: SliderData[] = data.map((item: any, i: number): SliderData => {
-        let res: SliderData = {
-          name: item.Channel,
-          defaultValue: item.Value,
-          step: 1,
-          min: 0,
-          max: 255,
-        };
-        return res;
-      });
-
+      let sliders: SliderData[] = parseResponse(data);
       setSlidersData(sliders);
     } catch (error) {
       console.error('Failed to fetch sliders data:', error);
@@ -45,7 +67,7 @@ const SlidersComponent = () => {
     // const name = event.currentTarget.getAttribute('data-name')
 
     try {
-      const response = await fetch(`/api/v2/root/0/${name}/${value}`, {
+      const response = await fetch(`/api/v2/root/${controlId}/${name}/${value}`, {
         method: 'POST',
       });
 
