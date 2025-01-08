@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 
 interface DropdownProps {
-    controlId: number;
+    name: string;
+    path: string;
 }
 
 interface DropdownData {
@@ -11,14 +12,14 @@ interface DropdownData {
     defaultValue: string;
 }
 
-const DropdownComponent: React.FC<DropdownProps> = ({ controlId }) => {
+const DropdownComponent: React.FC<DropdownProps> = ({ name, path }) => {
     const [dropdownData, setDropdownData] = useState<DropdownData | null>(null);
     const [selectedValue, setSelectedValue] = useState<string>('');
 
     // Function to fetch dropdown data from the API
     const fetchDropdownData = async () => {
         try {
-            const response = await fetch(`/api/v2/root/${controlId}`);
+            const response = await fetch(`${path}/${name}`);
             const data = await response.json();
 
             const formattedData: DropdownData = {
@@ -36,14 +37,14 @@ const DropdownComponent: React.FC<DropdownProps> = ({ controlId }) => {
 
     useEffect(() => {
         fetchDropdownData();
-    }, [controlId]);
+    }, [name, path]);
 
     const handleChange = async (event: any) => {
         const value = event.target.value;
         setSelectedValue(value);
 
         try {
-            const response = await fetch(`/api/v2/root/${controlId}/${value}`, {
+            const response = await fetch(`${path}/${name}/${value}`, {
                 method: 'POST',
             });
 

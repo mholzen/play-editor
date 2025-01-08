@@ -4,7 +4,7 @@ import './App.css';
 import SlidersComponent from './components/Sliders/Sliders';
 import DropdownComponent from './components/Dropdown/Dropdown';
 import ToggleComponent from './components/Toggle/Toggle';
-
+import Container from './components/Container/Container';
 // TODO: Add visual representation of a failed POST request, as a list of errors
 
 function App() {
@@ -12,14 +12,13 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className='flex flex-col gap-10 bg-white p-10'>
-          <DropdownComponent controlId={0} />
+          <DropdownComponent name="0" path="/api/v2/root"/>
           <p>Dials</p>
-          <SlidersComponent controlId={1} />
-          <SlidersComponent controlId={2} />
+          {/* <SlidersComponent controlId={1} /> */}
+          <Container name="1" path="/api/v2/root" />
           <p>Rainbow</p>
-          <SlidersComponent controlId={3} />
-          <SlidersComponent controlId={4} />
-          <ToggleComponent controlId={5} name='Reverse' defaultValue={false} />
+          {/* <SlidersComponent controlId={3} /> */}
+          <Container name="3" path="/api/v2/root" />
         </div>
       </header>
     </div>
