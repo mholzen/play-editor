@@ -1,40 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import Slider from '../Slider/Slider';
-import DropdownComponent from '../Dropdown/Dropdown';
+import Dropdown from '../Dropdown/Dropdown';
 import Toggle from '../Toggle/Toggle';
+import SingleSlider from '../Slider/Slider';
+import { apiGet, apiPost } from '../../config/api';
 
 interface ContainerProps {
-  name: string;
-  path: string;
+  url: string;
 }
-
-type ItemType = 'slider' | 'dropdown' | 'toggle';
 
 interface ContainerData {
+  type: string;
   name: string;
-  type: ItemType;
+  value: any;
 }
 
-const determineType = (data: any): ItemType => {
-  if (data.sources) {
-    return 'dropdown';
+const determineType = (item: any): string => {
+  if (Array.isArray(item)) {
+    return 'container';
   }
-  
-  if (typeof data.defaultValue === 'boolean' || typeof data.value === 'boolean' || typeof data === 'boolean') {
+  if (typeof item === 'boolean' || (typeof item === 'object' && 'type' in item && item.type === 'toggle')) {
     return 'toggle';
   }
-  
-  return 'slider';
+  if (typeof item === 'number' || (typeof item === 'object' && 'type' in item && item.type === 'slider')) {
+    return 'slider';
+  }
+  if (typeof item === 'object') {
+    if ('type' in item) {
+      return item.type; // the object tells us what type it is
+    }
+    if ('max' in item && 'min' in item) {
+      return 'slider';
+    }
+    if ('value' in item && typeof item.value === 'number') {
+      return 'slider';
+    }
+    if ('sources' in item) {
+      return 'dropdown';
+    }
+  }
+  if (typeof item === 'string' && !isNaN(Number(item))) {
+    return 'slider';
+  }
+  console.log("dropdown?", item);
+  return 'dropdown';
 };
 
-const Container: React.FC<ContainerProps> = ({ name, path }) => {
+const Container: React.FC<ContainerProps> = ({ url }) => {
   const [items, setItems] = useState<ContainerData[]>([]);
 
   const fetchContainerData = async () => {
     try {
-      const response = await fetch(`${path}/${name}`);
-      const data = await response.json();
+      const data = await apiGet(url);
       
       if (Array.isArray(data)) {
         const processedItems = data.map((item, index) => ({
@@ -57,44 +74,67 @@ const Container: React.FC<ContainerProps> = ({ name, path }) => {
     }
   };
 
+  const onChange = (itemName: string) => async (event: any) => {
+    const { value } = event.target;
+
+    try {
+      const result = await apiPost(`${url}/${itemName}`, value);
+    } catch (error) {
+      console.error('Failed to update slider:', error);
+    };
+  };
+
   useEffect(() => {
     fetchContainerData();
-  }, [name, path]);
+  }, [url]);
 
-  const renderComponent = (item: ContainerData) => {
-    switch (item.type) {
+  const renderComponent = (itemType: string, item: ContainerData) => {
+    const childUrl = `${url}/${item.name}`;
+    
+    switch (itemType) {
       case 'slider':
-        return <Slider name={item.name} path={path} defaultValue={0} step={1} min={0} max={255} onChange={() => {}} />;
+        return <SingleSlider {...item} onChange={onChange(item.name)} />;
       case 'dropdown':
-        return <DropdownComponent name={item.name} path={path} />;
+        return <Dropdown url={childUrl} />;
       case 'toggle':
-        return <Toggle name={item.name} path={path} />;
+        return <Toggle url={childUrl} />;
+      case 'container':
+        return <Container url={childUrl} />;
       default:
+        return "unknown type " + itemType;
+        // panic
+        console.log("panic", item);
         return null;
     }
   };
 
+  if (!items) {
+    return null;
+  }
+
   return (
     <div>
       <table>
-        <tr>
-          {items.map((item, index) => (
-            <th>
-              <Box sx={{ width: 50 }}>
-                <Typography>
-                  {item.name}
-                </Typography>
-              </Box>
-            </th>
-          ))}
-        </tr>
-        <tr>
-          {items.map((item, index) => (
-            <td>
-              {renderComponent(item)}
-            </td>
-          ))}
-        </tr>
+        <tbody>
+          <tr>
+            {items.map((item, index) => (
+              <th key={index}>
+                <Box sx={{ width: 50 }}>
+                  <Typography>
+                    {item.name}
+                  </Typography>
+                </Box>
+              </th>
+            ))}
+          </tr>
+          <tr>
+            {items.map((item, index) => (
+              <td key={index}>
+                {renderComponent(determineType(item), item)}
+              </td>
+            ))}
+          </tr>
+        </tbody>
       </table>
     </div>
   );

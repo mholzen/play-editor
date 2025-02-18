@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { Switch, FormControlLabel, Box } from '@mui/material';
+import { apiGet, apiPost } from '../../config/api';
 
 interface ToggleProps {
-    name: string;
-    path: string;
+    url: string;
+    name?: string;
 }
 
 interface ToggleData {
-    value: string;
+    value: boolean;
     defaultValue: boolean;
 }
 
-const Toggle = ({ name, path }: ToggleProps) => {
+const Toggle = ({ url, name }: ToggleProps) => {
     const [toggleData, setToggleData] = useState<ToggleData | null>(null);
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`${path}/${name}`);
-            const data = await response.json();
+            const data = await apiGet(`${url}`);
             
             setToggleData({
                 value: data.value,
@@ -30,21 +30,13 @@ const Toggle = ({ name, path }: ToggleProps) => {
 
     useEffect(() => {
         fetchData();
-    }, [name, path]);
+    }, [url]);
 
     const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const { checked } = event.target;
 
         try {
-            const response = await fetch(`${path}/${name}/${checked ? 1 : 0}`, {
-                method: 'POST',
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const result = await response.json();
+            const result = await apiPost(`${url}/${checked ? 1 : 0}`);
             console.log(result);
         } catch (error) {
             console.error('Failed to update toggle:', error);

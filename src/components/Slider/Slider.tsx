@@ -3,21 +3,21 @@ import { Box, Slider, Typography } from '@mui/material';
 
 interface SliderProps {
   name: string;
-  path: string;
-  defaultValue: number;
-  step: number;
-  min: number;
-  max: number;
+  defaultValue?: number;
+  step?: number;
+  min?: number;
+  max?: number;
+  marks?: { value: number; label: string }[];
   onChange: (event: any) => void;
 }
 
 const SingleSlider = ({ 
   name, 
-  path,
   defaultValue, 
   step, 
   min, 
-  max, 
+  max,
+  marks,
   onChange 
 }: SliderProps) => {
   return (
@@ -30,7 +30,7 @@ const SingleSlider = ({
           aria-labelledby="discrete-slider"
           valueLabelDisplay="auto"
           step={step}
-          marks
+          marks={marks}
           min={min ? min : 0}
           max={max ? max : 255}
         />

@@ -1,5 +1,6 @@
 host=ubuntu-1
 
+# Development targets
 run:
 	npm start
 
@@ -19,3 +20,23 @@ ssh:
 remote-start:
 	ssh -A $(host) -l marc "cd play-editor && npm start"
 
+# Docker targets
+.PHONY: build-docker
+build-docker:
+	docker buildx build --platform linux/amd64 -t play-editor --load .
+
+.PHONY: run-docker
+run-docker:
+	docker run -p 3000:3000 --add-host=host.docker.internal:host-gateway play-editor
+
+.PHONY: run-docker-remote
+run-docker-remote:
+	ssh marc@$(host) "docker run -p 3000:3000 --add-host=host.docker.internal:host-gateway ubuntu-1:5000/play-editor"
+
+.PHONY: docker
+docker: build-docker run-docker
+
+.PHONY: push-docker
+push-docker:
+	docker tag play-editor $(host):5000/play-editor
+	docker push $(host):5000/play-editor

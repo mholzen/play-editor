@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { apiGet, apiPost } from '../../config/api';
 
 interface DropdownProps {
-    name: string;
-    path: string;
+    url: string;
 }
 
 interface DropdownData {
@@ -12,22 +12,19 @@ interface DropdownData {
     defaultValue: string;
 }
 
-const DropdownComponent: React.FC<DropdownProps> = ({ name, path }) => {
+const Dropdown: React.FC<DropdownProps> = ({ url }) => {
     const [dropdownData, setDropdownData] = useState<DropdownData | null>(null);
     const [selectedValue, setSelectedValue] = useState<string>('');
 
     // Function to fetch dropdown data from the API
     const fetchDropdownData = async () => {
         try {
-            const response = await fetch(`${path}/${name}`);
-            const data = await response.json();
-
+            const data = await apiGet(`${url}`);
             const formattedData: DropdownData = {
                 name: data.name ? data.name : 'Select a source',
                 options: data.sources,
                 defaultValue: data.source,
             };
-
             setDropdownData(formattedData);
             setSelectedValue(formattedData.defaultValue);
         } catch (error) {
@@ -37,22 +34,14 @@ const DropdownComponent: React.FC<DropdownProps> = ({ name, path }) => {
 
     useEffect(() => {
         fetchDropdownData();
-    }, [name, path]);
+    }, [url]);
 
     const handleChange = async (event: any) => {
         const value = event.target.value;
         setSelectedValue(value);
 
         try {
-            const response = await fetch(`${path}/${name}/${value}`, {
-                method: 'POST',
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const result = await response.json();
+            const result = await apiPost(`${url}`, value);
             console.log(result);
         } catch (error) {
             console.error('Failed to update dropdown:', error);
@@ -79,4 +68,4 @@ const DropdownComponent: React.FC<DropdownProps> = ({ name, path }) => {
     );
 };
 
-export default DropdownComponent; 
+export default Dropdown; 
