@@ -4,29 +4,30 @@ import { apiGet, apiPost } from '../../config/api';
 
 interface DropdownProps {
     url: string;
-}
-
-interface DropdownData {
     name: string;
     options: string[];
     defaultValue: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ url }) => {
+interface DropdownData {
+    value: string;
+}
+
+const Dropdown: React.FC<DropdownProps> = ({ url, name, options, defaultValue }) => {
     const [dropdownData, setDropdownData] = useState<DropdownData | null>(null);
     const [selectedValue, setSelectedValue] = useState<string>('');
 
-    // Function to fetch dropdown data from the API
     const fetchDropdownData = async () => {
         try {
             const data = await apiGet(`${url}`);
-            const formattedData: DropdownData = {
-                name: data.name ? data.name : 'Select a source',
-                options: data.sources,
-                defaultValue: data.source,
-            };
-            setDropdownData(formattedData);
-            setSelectedValue(formattedData.defaultValue);
+            const value = data.value;
+            // const formattedData: DropdownData = {
+            //     name: data.name ? data.name : 'Select a source',
+            //     options: data.sources,
+            //     defaultValue: data.source,
+            // };
+            // setDropdownData(formattedData);
+            setSelectedValue(value);
         } catch (error) {
             console.error('Failed to fetch dropdown data:', error);
         }
@@ -52,13 +53,13 @@ const Dropdown: React.FC<DropdownProps> = ({ url }) => {
 
     return (
         <FormControl sx={{ minWidth: 200 }}>
-            <InputLabel>{dropdownData.name}</InputLabel>
+            <InputLabel>{name}</InputLabel>
             <Select
                 value={selectedValue}
-                label={dropdownData.name}
+                label={name}
                 onChange={handleChange}
             >
-                {dropdownData.options.map((option) => (
+                {options.map((option) => (
                     <MenuItem key={option} value={option}>
                         {option}
                     </MenuItem>
@@ -69,3 +70,4 @@ const Dropdown: React.FC<DropdownProps> = ({ url }) => {
 };
 
 export default Dropdown; 
+export type { DropdownProps };

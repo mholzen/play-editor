@@ -4,6 +4,9 @@ host=ubuntu-1
 run:
 	npm start
 
+test:
+	npm test
+
 push:
 	rsync -avz --exclude .git --exclude node_modules -e ssh . marc@$(host):play-editor
 

@@ -4,25 +4,26 @@ import { apiGet, apiPost } from '../../config/api';
 
 interface ToggleProps {
     url: string;
-    name?: string;
+    defaultValue: boolean;
 }
 
 interface ToggleData {
     value: boolean;
-    defaultValue: boolean;
 }
 
-const Toggle = ({ url, name }: ToggleProps) => {
-    const [toggleData, setToggleData] = useState<ToggleData | null>(null);
+const Toggle = ({ url, defaultValue }: ToggleProps) => {
+    const [toggleData, setToggleData] = useState<boolean>(defaultValue);
 
     const fetchData = async () => {
         try {
             const data = await apiGet(`${url}`);
-            
-            setToggleData({
-                value: data.value,
-                defaultValue: data.defaultValue
-            });
+            if (typeof data == 'boolean') {
+                setToggleData(data);
+              } else if (typeof data == 'object' && typeof data.value == 'boolean') {
+                  setToggleData(data.value);
+              } else {
+                console.error('Failed to fetch slider data:', data);
+              }
         } catch (error) {
             console.error('Failed to fetch toggle data:', error);
         }
@@ -32,30 +33,18 @@ const Toggle = ({ url, name }: ToggleProps) => {
         fetchData();
     }, [url]);
 
-    const onChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { checked } = event.target;
-
-        try {
-            const result = await apiPost(`${url}/${checked ? 1 : 0}`);
-            console.log(result);
-        } catch (error) {
-            console.error('Failed to update toggle:', error);
-        }
-    };
-
-    if (!toggleData) return null;
+    const onChange = async (event: any) => {
+        apiPost(`${url}`, event.target.value);
+        setToggleData(event.target.value);
+      }
 
     return (
-        <FormControlLabel
-            control={
-                <Switch
-                    defaultChecked={toggleData.defaultValue}
-                    onChange={onChange}
-                />
-            }
-            label={name}
+        <Switch
+            defaultChecked={defaultValue}
+            onChange={onChange}
         />
     );
 };
 
 export default Toggle; 
+export type { ToggleProps };
