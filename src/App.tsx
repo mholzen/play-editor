@@ -11,13 +11,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div className='flex flex-col gap-10 bg-white p-10'>
-          <Dropdown url="/api/v2/root/0" name="source" options={[]} defaultValue={""}/>
-
-          <p>Dials</p>
-          <Container url="/api/v2/root/1" />
-
-          <p>Rainbow</p>
-          <Container url="/api/v2/root/3" />
+          <Container url="/api/v2/root" />
         </div>
       </header>
     </div>

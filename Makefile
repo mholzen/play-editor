@@ -34,7 +34,7 @@ run-docker:
 
 .PHONY: run-docker-remote
 run-docker-remote:
-	ssh marc@$(host) "docker run -p 3000:3000 --add-host=host.docker.internal:host-gateway ubuntu-1:5000/play-editor"
+	ssh marc@$(host) "docker pull ubuntu-1:5000/play-editor && docker run -p 80:3000 --add-host=host.docker.internal:host-gateway ubuntu-1:5000/play-editor"
 
 .PHONY: docker
 docker: build-docker run-docker

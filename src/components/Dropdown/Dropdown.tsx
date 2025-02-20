@@ -14,7 +14,6 @@ interface DropdownData {
 }
 
 const Dropdown: React.FC<DropdownProps> = ({ url, name, options, defaultValue }) => {
-    const [dropdownData, setDropdownData] = useState<DropdownData | null>(null);
     const [selectedValue, setSelectedValue] = useState<string>('');
 
     const fetchDropdownData = async () => {
@@ -49,8 +48,6 @@ const Dropdown: React.FC<DropdownProps> = ({ url, name, options, defaultValue })
         }
     };
 
-    if (!dropdownData) return null;
-
     return (
         <FormControl sx={{ minWidth: 200 }}>
             <InputLabel>{name}</InputLabel>
@@ -59,7 +56,7 @@ const Dropdown: React.FC<DropdownProps> = ({ url, name, options, defaultValue })
                 label={name}
                 onChange={handleChange}
             >
-                {options.map((option) => (
+                {options && options.map((option) => (
                     <MenuItem key={option} value={option}>
                         {option}
                     </MenuItem>

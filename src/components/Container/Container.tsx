@@ -34,6 +34,9 @@ const determineType = (item: any): string => {
   }
 
   if (typeof item === 'object') {
+    if (item == null) {
+      return 'null';
+    }
     if ('type' in item) {
       return item.type; // the object tells us what type it is
     }
@@ -57,7 +60,7 @@ const determineType = (item: any): string => {
       return 'dropdown';
     }
   }
-  return "dropdown"; // default is to display a list of options
+  return 'container'; // default is to display a list of options
 };
 
 const getName = (item: any, index: number) => {
@@ -85,15 +88,11 @@ const Container: React.FC<ContainerProps> = ({ url }) => {
         setItems(processedItems);
       } else {
         const processedItems = Object.entries(data).map(([key, value], index) => {
-          let results = {
+          return {
             name: key,
             type: determineType(value),
             item: value,
           };
-          // if (typeof value == 'object') {
-          //   results = Object.assign(results, value);
-          // }
-          return results;
         });
         setItems(processedItems);
       }
@@ -120,7 +119,6 @@ const Container: React.FC<ContainerProps> = ({ url }) => {
         return <Dropdown {...dropdownProps} />;
       case 'toggle':
         let toggleProps : ToggleProps;
-        console.log("toggle", item.item);
         if (typeof item.item === 'boolean') {
           toggleProps = {
             url: childUrl,
@@ -136,7 +134,7 @@ const Container: React.FC<ContainerProps> = ({ url }) => {
       case 'container':
         return <Container url={childUrl} />;
       default:
-        return "unknown type " + item.type;
+        return;
     }
   };
 
