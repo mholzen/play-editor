@@ -28,9 +28,9 @@ export const apiPost = async (path: string, data?: any) => {
             'Content-Type': 'application/json',
         },
     };
-    
+
     if (data !== undefined) {
-        options.body = typeof data === 'string' ? data : JSON.stringify(data);
+        options.body = JSON.stringify(data);
     }
 
     const response = await fetch(buildApiUrl(path), options);
@@ -38,4 +38,4 @@ export const apiPost = async (path: string, data?: any) => {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     return response.json();
-}; 
+};

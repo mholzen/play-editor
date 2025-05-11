@@ -10,10 +10,34 @@ interface SingleSliderProps {
   marks?: { value: number; label: string }[];
 }
 
-const SingleSlider = ({ 
-  url, 
-  step, 
-  min, 
+export class SingleSliderDefaultProps {
+  url: string;
+  step?: number;
+  min?: number;
+  max?: number;
+  marks?: { value: number; label: string }[];
+
+  constructor(input: any) {
+    this.url = '';
+    this.step = 1;
+    this.min = 0;
+    this.max = 255;
+    this.marks = [];
+
+    if (typeof input === 'object') {
+      this.url = input.url;
+      this.step = input.step;
+      this.min = input.min;
+      this.max = input.max;
+      this.marks = input.marks;
+    }
+  }
+}
+
+const SingleSlider = ({
+  url,
+  step,
+  min,
   max,
   marks,
 }: SingleSliderProps) => {
@@ -53,7 +77,7 @@ const SingleSlider = ({
   return (
     <div>
       <Box sx={{ height: 200 }}>
-        <Slider        
+        <Slider
           value={selectedValue}
           orientation="vertical"
           // defaultValue={defaultValue}
@@ -71,5 +95,5 @@ const SingleSlider = ({
   );
 };
 
-export default SingleSlider; 
+export default SingleSlider;
 export type { SingleSliderProps };
