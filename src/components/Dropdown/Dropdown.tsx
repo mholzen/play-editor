@@ -66,5 +66,5 @@ const Dropdown: React.FC<DropdownProps> = ({ url, name, options, defaultValue })
     );
 };
 
-export default Dropdown; 
+export default Dropdown;
 export type { DropdownProps };

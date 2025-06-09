@@ -90,26 +90,32 @@ const getName = (item: any, index: number) => {
 
 const makeArray = (data: any) : Item[] => {
   if (Array.isArray(data)) {
-
-    return data.map((item, index) => {
-      return {
-        value: item,
-        getName: () => String(index),
-        getType: () => determineType(item),
+    const results = data.map((item, index) => {
+      // is the item just a name/value pair?
+      if (typeof item === 'object' && item?.name && item?.value) {
+        return {
+          value: item.value,
+          getName: () => item.name,
+          getType: () => determineType(item.value),
+        }
+      } else {
+        return {
+          value: item,
+          getName: () => item?.channel || String(index),
+          getType: () => determineType(item),
+        }
       }
-    })
+    });
+    return results;
   }
-  return Object.entries(data).map(([key, value], index) => {
+
+  return Object.entries(data).map(([key, item], index) => {
     return {
-      value: value,
+      value: item,
       getName: () => key,
-      getType: () => determineType(value),
+      getType: () => determineType(item),
     }
   })
-}
-
-const processContainer = (data: any) => {
-  const items = makeArray(data)
 }
 
 const Container: React.FC<ContainerProps> = ({ url }) => {
@@ -168,7 +174,7 @@ const Container: React.FC<ContainerProps> = ({ url }) => {
       case 'dropdown':
         let dropdownProps : DropdownProps = item.value;
         dropdownProps.url = childUrl;
-        dropdownProps.options = item.value.sources;
+        dropdownProps.options = item.value.options;
         dropdownProps.defaultValue = item.value.source;
         dropdownProps.name = item.value.name;
         return <Dropdown {...dropdownProps} />;
