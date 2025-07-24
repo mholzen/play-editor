@@ -7,6 +7,7 @@ import { apiGet, apiPost } from '../../config/api';
 
 interface ContainerProps {
   url: string;
+  depth?: number;
 }
 
 interface Item {
@@ -78,16 +79,6 @@ const determineType = (item: any): ControllerType | null => {
   return ControllerType.CONTAINER; // default is to display a list of options
 };
 
-const getName = (item: any, index: number) => {
-  // if (Array.isArray(item) && item.length >= 2) {
-  //   return item[0]; // first item is the name, second item is the value
-  // }
-  if (typeof item === 'object' && typeof item.name === 'string') {
-    return item.name;
-  }
-  return `${index}`;
-}
-
 const makeArray = (data: any) : Item[] => {
   if (Array.isArray(data)) {
     const results = data.map((item, index) => {
@@ -118,7 +109,7 @@ const makeArray = (data: any) : Item[] => {
   })
 }
 
-const Container: React.FC<ContainerProps> = ({ url }) => {
+const Container: React.FC<ContainerProps> = ({ url, depth = 0 }) => {
   const [items, setItems] = useState<Item[]>([]);
 
   const fetchContainerData = async (url: string) => {
@@ -127,33 +118,6 @@ const Container: React.FC<ContainerProps> = ({ url }) => {
       const processedItems = makeArray(data);
       setItems(processedItems);
 
-      // if (Array.isArray(data)) {
-      //   const processedItems = data.map((item, index) => {  // TODO: move to function calls when data is needed
-      //     if (Array.isArray(item) && item.length >= 2) {
-      //       return {
-      //         name: getName(item, index),
-      //         type: determineType(item[1]),
-      //         item: item[1],
-      //       }
-      //     } else {
-      //       return {
-      //         name: getName(item, index),
-      //         type: determineType(item),
-      //         item: item,
-      //       }
-      //     }
-      //   });
-      //   setItems(processedItems);
-      // } else {
-      //   const processedItems = Object.entries(data).map(([key, value], index) => {
-      //     return {
-      //       name: key,
-      //       type: determineType(value),
-      //       item: value,
-      //     };
-      //   });
-      //   setItems(processedItems);
-      // }
     } catch (error) {
       console.error('Failed to fetch container data:', error);
     }
@@ -193,8 +157,7 @@ const Container: React.FC<ContainerProps> = ({ url }) => {
         toggleProps.url = childUrl;
         return <Toggle {...toggleProps} />;
       case 'container':
-        // return <p>{childUrl}</p>;
-        return <Container url={childUrl} />;
+        return <Container url={childUrl} depth={depth + 1} />;
       default:
         return;
     }
@@ -204,30 +167,66 @@ const Container: React.FC<ContainerProps> = ({ url }) => {
     return null;
   }
 
+  const header = (item: Item, index: number) => (
+    <th key={index}>
+    <Box sx={{ width: 50 }}>
+      <Typography>
+        {item.getName()}
+      </Typography>
+    </Box>
+  </th>
+  )
+
+  const row = (item: Item, index: number) => (
+    <td key={index}>
+      {renderItem(item)}
+    </td>
+  )
+
+  const table = (items: Item[]) => (
+    <table>
+    <tbody>
+      <tr>
+        {items.map((item, index) => (
+          header(item, index)
+        ))}
+      </tr>
+      <tr>
+        {items.map((item, index) => (
+          row(item, index)
+        ))}
+      </tr>
+    </tbody>
+  </table>
+  )
+
+  const list = (items: Item[]) => (
+    <ul>
+      {items.map((item, index) => (
+        <li key={index}>
+          {renderItem(item)}
+        </li>
+      ))}
+  </ul>
+  )
+
+  const formats = {
+    table: table,
+    list: list,
+  }
+
+  const getFormat = (depth: number) => {
+    if (depth < 1) {
+      return 'list';
+    }
+    return 'table';
+  }
+
+
+
   return (
     <div>
-      <table>
-        <tbody>
-          <tr>
-            {items.map((item, index) => (
-              <th key={index}>
-                <Box sx={{ width: 50 }}>
-                  <Typography>
-                    {item.getName()}
-                  </Typography>
-                </Box>
-              </th>
-            ))}
-          </tr>
-          <tr>
-            {items.map((item, index) => (
-              <td key={index}>
-                {renderItem(item)}
-              </td>
-            ))}
-          </tr>
-        </tbody>
-      </table>
+      {formats[getFormat(depth)](items)}
     </div>
   );
 };
