@@ -49,7 +49,15 @@ const Dropdown: React.FC<DropdownProps> = ({ url, name, options, defaultValue })
     };
 
     return (
-        <FormControl sx={{ minWidth: 200 }}>
+        <FormControl
+            sx={{
+                minWidth: 200,
+                '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                },
+            }}
+            size="small"
+        >
             <InputLabel>{name}</InputLabel>
             <Select
                 value={selectedValue}

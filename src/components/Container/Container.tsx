@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Paper, Grid } from '@mui/material';
 import Dropdown, { DropdownProps } from '../Dropdown/Dropdown';
 import Toggle, { ToggleProps } from '../Toggle/Toggle';
 import SingleSlider, { SingleSliderDefaultProps, SingleSliderProps } from '../Slider/Slider';
@@ -167,47 +167,78 @@ const Container: React.FC<ContainerProps> = ({ url, depth = 0 }) => {
     return null;
   }
 
-  const header = (item: Item, index: number) => (
-    <th key={index}>
-    <Box sx={{ width: 50 }}>
-      <Typography>
-        {item.getName()}
-      </Typography>
-    </Box>
-  </th>
-  )
-
-  const row = (item: Item, index: number) => (
-    <td key={index}>
-      {renderItem(item)}
-    </td>
+  const name = (item: Item) => (
+    <Typography
+      variant="body2"
+      sx={{
+        fontWeight: 500,
+        color: 'text.secondary',
+        mb: 1,
+        textAlign: 'center',
+      }}
+    >
+      {item.getName()}
+    </Typography>
   )
 
   const table = (items: Item[]) => (
-    <table>
-    <tbody>
-      <tr>
+    <Paper
+      elevation={2}
+      sx={{
+        p: 3,
+        mb: 2,
+        borderRadius: 2,
+      }}
+    >
+      <Grid container spacing={2}>
         {items.map((item, index) => (
-          header(item, index)
+          <Grid
+            item
+            key={index}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            {name(item)}
+            {renderItem(item)}
+          </Grid>
         ))}
-      </tr>
-      <tr>
-        {items.map((item, index) => (
-          row(item, index)
-        ))}
-      </tr>
-    </tbody>
-  </table>
+      </Grid>
+    </Paper>
   )
 
   const list = (items: Item[]) => (
-    <ul>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {items.map((item, index) => (
-        <li key={index}>
-          {renderItem(item)}
-        </li>
+        <Paper
+          key={index}
+          elevation={1}
+          sx={{
+            p: 2,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            borderRadius: 2,
+          }}
+        >
+          <Typography
+            variant="subtitle2"
+            sx={{
+              minWidth: 120,
+              fontWeight: 600,
+              color: 'text.secondary',
+            }}
+          >
+            {item.getName()}
+          </Typography>
+          <Box sx={{ flexGrow: 1 }}>
+            {renderItem(item)}
+          </Box>
+        </Paper>
       ))}
-  </ul>
+    </Box>
   )
 
   const formats = {

@@ -10,7 +10,7 @@ function App() {
           <img src="/logo.png" alt="Logo" className="w-24 h-24" />
           <h1 className="text-2xl font-bold text-black">play-editor</h1>
         </div>
-        <div className='flex flex-col gap-10 bg-white p-10'>
+        <div className='flex flex-col gap-6 bg-gray-50 p-12 min-h-screen pt-32'>
           <Container url="/api/v2/root" />
         </div>
       </header>

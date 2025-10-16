@@ -75,23 +75,32 @@ const SingleSlider = ({
   }, [url]);
 
   return (
-    <div>
-      <Box sx={{ height: 200 }}>
-        <Slider
-          value={selectedValue}
-          orientation="vertical"
-          // defaultValue={defaultValue}
-          onChange={handleChange}
-          aria-labelledby="discrete-slider"
-          valueLabelDisplay="auto"
-          // scale={scale}
-          step={step}
-          marks={marks}
-          min={min ? min : 0}
-          max={max ? max : 255}
-        />
-      </Box>
-    </div>
+    <Box sx={{
+      height: 240,
+      display: 'flex',
+      justifyContent: 'center',
+      paddingLeft: marks && marks.length > 0 ? '40px' : '0px',
+      paddingRight: '8px',
+    }}>
+      <Slider
+        value={selectedValue}
+        orientation="vertical"
+        onChange={handleChange}
+        aria-labelledby="discrete-slider"
+        valueLabelDisplay="auto"
+        step={step}
+        marks={marks}
+        min={min ? min : 0}
+        max={max ? max : 255}
+        sx={{
+          '& .MuiSlider-markLabel': {
+            fontSize: '0.7rem',
+            transform: 'translateX(-100%)',
+            left: '-8px !important',
+          },
+        }}
+      />
+    </Box>
   );
 };
 
