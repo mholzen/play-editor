@@ -1,0 +1,21 @@
+[Unit]
+Description=Play Editor - React Application Server
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/play-editor
+ExecStart=/usr/bin/npx serve -s build -l 3000
+Restart=on-failure
+RestartSec=3
+
+# Environment
+Environment=NODE_ENV=production
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=play-editor
+
+[Install]
+WantedBy=default.target

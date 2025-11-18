@@ -1,0 +1,15 @@
+[Unit]
+Description=Watch Play Editor build directory for changes
+After=network.target
+
+[Path]
+# Watch the build directory for any changes
+PathModified=%h/develop/mholzen/play-editor/build
+# Also trigger if the build directory is created/deleted
+PathExists=%h/develop/mholzen/play-editor/build
+
+# Trigger the service when changes are detected
+Unit=play-editor.service
+
+[Install]
+WantedBy=default.target
