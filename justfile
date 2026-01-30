@@ -26,7 +26,7 @@ build-docker:
     docker buildx build --platform linux/amd64 -t play-editor --load .
 
 run-docker:
-    docker run -d --name play-editor -p 3000:3000 --add-host=host.docker.internal:host-gateway play-editor
+    docker run -d --name play-editor -p 80:3000 --add-host=host.docker.internal:host-gateway play-editor
 
 run-docker-remote:
     ssh marc@{{host}} "docker pull {{host}}:5000/play-editor && docker run -p 80:3000 --add-host=host.docker.internal:host-gateway {{host}}:5000/play-editor"
